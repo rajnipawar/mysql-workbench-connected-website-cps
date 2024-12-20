@@ -2,12 +2,6 @@
 
 A comprehensive web application for managing and analyzing data from Chicago Public Schools. This application provides an intuitive interface for accessing information about schools, students, teachers, and facilities while offering basic and advanced analytics capabilities.
 
-#### contribution
-
-Rajni Pawar          (A20583682) - 33.33%
-Akshay Ajay Sharma   (A20575873) - 33.33%
-Kasturi Shinde       (A20572695) - 33.33%
-
 ## Features
 
 ### Core Functionality
