@@ -1,0 +1,23 @@
+<!-- templates/teachers.html -->
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold">Teacher Directory</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for teacher in teachers %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">{{ teacher.Teacher_name }}</h2>
+                <div class="space-y-2 text-gray-600">
+                    <p><i class="fas fa-envelope mr-2"></i>{{ teacher.Teacher_email }}</p>
+                    <p><i class="fas fa-school mr-2"></i>{{ teacher.School_name }}</p>
+                    {% if teacher.subjects %}
+                        <p><i class="fas fa-book mr-2"></i>Subjects: {{ teacher.subjects }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

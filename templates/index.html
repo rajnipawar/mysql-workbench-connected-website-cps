@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-bold mb-4">Welcome to Chicago Public Schools Dashboard</h1>
+        <p class="text-gray-600">Manage and monitor school information, students, teachers, and events.</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Schools -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 uppercase">Schools</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ stats.school_count if stats else 0 }}</p>
+                </div>
+                <div class="bg-blue-100 rounded-full p-3">
+                    <i class="fas fa-school text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 uppercase">Students</p>
+                    <p class="text-2xl font-bold text-green-600">{{ stats.student_count if stats else 0 }}</p>
+                </div>
+                <div class="bg-green-100 rounded-full p-3">
+                    <i class="fas fa-user-graduate text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teachers -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 uppercase">Teachers</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ stats.teacher_count if stats else 0 }}</p>
+                </div>
+                <div class="bg-purple-100 rounded-full p-3">
+                    <i class="fas fa-chalkboard-teacher text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 uppercase">Upcoming Events</p>
+                    <p class="text-2xl font-bold text-orange-600">{{ events|length if events else 0 }}</p>
+                </div>
+                <div class="bg-orange-100 rounded-full p-3">
+                    <i class="fas fa-calendar text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events Section -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Upcoming Events</h2>
+            <a href="{{ url_for('events') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <span>View All</span>
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        
+        {% if events %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for event in events %}
+            <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-lg">{{ event.Event_name }}</h3>
+                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Upcoming</span>
+                </div>
+                <div class="mt-2 space-y-2">
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-school mr-2"></i>
+                        <span>{{ event.School_name }}</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="far fa-calendar mr-2"></i>
+                        <span>{{ event.formatted_date }}</span>
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span>{{ event.Event_location }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+            <i class="far fa-calendar-times text-4xl mb-2"></i>
+            <p>No upcoming events scheduled</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

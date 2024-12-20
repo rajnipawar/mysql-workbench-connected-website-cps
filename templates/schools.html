@@ -1,0 +1,24 @@
+<!-- templates/schools.html -->
+{% extends "base.html" %}
+{% block title %}Schools{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold">Schools Directory</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for school in schools %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">{{ school.School_name }}</h2>
+                <div class="space-y-2 text-gray-600">
+                    <p><i class="fas fa-phone mr-2"></i>{{ school.School_contact }}</p>
+                    <p><i class="fas fa-map-marker-alt mr-2"></i>{{ school.School_address }}</p>
+                    <div class="border-t pt-2 mt-2">
+                        <p><i class="fas fa-user-graduate mr-2"></i>Students: {{ school.student_count }}</p>
+                        <p><i class="fas fa-chalkboard-teacher mr-2"></i>Teachers: {{ school.teacher_count }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

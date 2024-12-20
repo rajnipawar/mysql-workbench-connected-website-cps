@@ -1,0 +1,21 @@
+<!-- templates/facilities.html -->
+{% extends "base.html" %}
+{% block title %}Facilities{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold">School Facilities</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for facility in facilities %}
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-2">{{ facility.Facility_name }}</h2>
+                <div class="space-y-2 text-gray-600">
+                    <p><i class="fas fa-building mr-2"></i>Type: {{ facility.Facility_type }}</p>
+                    <p><i class="fas fa-users mr-2"></i>Capacity: {{ facility.Facility_capacity }}</p>
+                    <p><i class="fas fa-school mr-2"></i>School: {{ facility.School_name }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

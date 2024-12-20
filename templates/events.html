@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}School Events{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Header and Filters -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold mb-4 md:mb-0">School Events Dashboard</h1>
+        
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <select onchange="updateFilters()" id="schoolFilter" class="rounded-lg border border-gray-300 px-4 py-2 bg-white">
+                <option value="all" {% if selected_school == 'all' %}selected{% endif %}>All Schools</option>
+                {% for school in schools %}
+                <option value="{{ school.School_id }}" {% if selected_school == school.School_id|string %}selected{% endif %}>
+                    {{ school.School_name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <select onchange="updateFilters()" id="typeFilter" class="rounded-lg border border-gray-300 px-4 py-2 bg-white">
+                <option value="upcoming" {% if selected_type == 'upcoming' %}selected{% endif %}>Upcoming Events</option>
+                <option value="past" {% if selected_type == 'past' %}selected{% endif %}>Past Events</option>
+                <option value="all" {% if selected_type == 'all' %}selected{% endif %}>All Events</option>
+            </select>
+
+            <div class="relative">
+                <input type="text" 
+                       id="searchBox" 
+                       placeholder="Search events..." 
+                       value="{{ search_query }}"
+                       class="rounded-lg border border-gray-300 px-4 py-2 pr-10 w-full"
+                       onkeyup="if(event.key === 'Enter') updateFilters()">
+                <button onclick="updateFilters()" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Upcoming Events Card -->
+        <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-blue-600 font-medium">Upcoming Events</p>
+                    <h3 class="text-3xl font-bold mt-2">{{ upcoming_count }}</h3>
+                </div>
+                <div class="bg-blue-100 rounded-full p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Events Card -->
+        <div class="bg-green-50 rounded-lg p-6 border border-green-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-green-600 font-medium">Today's Events</p>
+                    <h3 class="text-3xl font-bold mt-2">{{ today_count }}</h3>
+                </div>
+                <div class="bg-green-100 rounded-full p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Schools Card -->
+        <div class="bg-purple-50 rounded-lg p-6 border border-purple-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-purple-600 font-medium">Active Schools</p>
+                    <h3 class="text-3xl font-bold mt-2">{{ school_count }}</h3>
+                </div>
+                <div class="bg-purple-100 rounded-full p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Events Card -->
+        <div class="bg-orange-50 rounded-lg p-6 border border-orange-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-orange-600 font-medium">Total Events</p>
+                    <h3 class="text-3xl font-bold mt-2">{{ upcoming_count + past_count }}</h3>
+                </div>
+                <div class="bg-orange-100 rounded-full p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6">
+            {% if selected_type == 'upcoming' %}Upcoming Events
+            {% elif selected_type == 'past' %}Past Events
+            {% else %}All Events{% endif %}
+        </h2>
+
+        {% if events %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for event in events %}
+            <div class="border rounded-lg p-6 hover:shadow-lg transition-all duration-200">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-lg">{{ event.Event_name }}</h3>
+                    <span class="text-xs px-2 py-1 rounded-full
+                        {% if event.status == 'Upcoming' %}bg-blue-100 text-blue-800
+                        {% elif event.status == 'Today' %}bg-green-100 text-green-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ event.status }}
+                    </span>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center text-gray-600">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        {{ event.School_name }}
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ event.formatted_date }}
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ event.formatted_time }}
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        {{ event.Event_location }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+            <i class="far fa-calendar-times text-4xl mb-2"></i>
+            <p>No upcoming events scheduled</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+function updateFilters() {
+    const school = document.getElementById('schoolFilter').value;
+    const type = document.getElementById('typeFilter').value;
+    const search = document.getElementById('searchBox').value;
+    
+    let url = new URL(window.location);
+    url.searchParams.set('school', school);
+    url.searchParams.set('type', type);
+    if (search) {
+        url.searchParams.set('search', search);
+    } else {
+        url.searchParams.delete('search');
+    }
+    
+    window.location.href = url.toString();
+}
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    document.querySelectorAll('.event-card').forEach(card => {
+        const eventName = card.querySelector('h3').textContent.toLowerCase();
+        const schoolName = card.querySelector('.text-gray-600').textContent.toLowerCase();
+        if (eventName.includes(searchTerm) || schoolName.includes(searchTerm)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// School filter
+document.getElementById('schoolFilter').addEventListener('change', function(e) {
+    const schoolId = e.target.value;
+    window.location.href = `/events?school=${schoolId}&time=${document.getElementById('timeFilter').value}`;
+});
+
+// Time filter
+document.getElementById('timeFilter').addEventListener('change', function(e) {
+    const timeFilter = e.target.value;
+    window.location.href = `/events?school=${document.getElementById('schoolFilter').value}&time=${timeFilter}`;
+});
+</script>
+{% endblock %}
